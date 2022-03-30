@@ -268,7 +268,7 @@ function key_auth_compute() {
 			    		setTimeout(function () { $('#incorrect').hide(); }, 5000);
 			    	}
 			    	else if(typeof confd == "object" && confd['val'] <= 50) {
-			    		$('#error').html("I'm " + (100 - confd).toPrecision(4) + "% confident that you are trying to bluff me.");
+			    		$('#error').html("I'm " + (100 - confd['val']).toPrecision(4) + "% confident that you are trying to bluff me.");
 			    		$('#error').show();
 			    		setTimeout(function () { $('#error').hide(); }, 5000);
 			    	}
