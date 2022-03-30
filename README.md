@@ -9,3 +9,5 @@ Technologies Used:<br/>
 -> Flask Framework<br/>
 -> Apache (From WameServer)<br/>
 -> MySQL (From WampServer)<br/>
+
+<img src="screenshots/loginPage.jpg"/>
