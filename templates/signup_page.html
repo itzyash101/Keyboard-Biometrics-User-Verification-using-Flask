@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<style>
+		form {border: 3px}
+		html { 
+		  background: url("{{ url_for('static', filename='secure2.jpg') }}") no-repeat center center fixed;
+		  -webkit-background-size: cover;
+		  -moz-background-size: cover;
+		  -o-background-size: cover;
+		  background-size: cover;
+		}
+		#uname, #psw {
+		  width: 25%;
+		  padding: 12px 20px;
+		  margin: 0px 37.5%;
+		  display: inline-block;
+		  border: 1px solid #ccc;
+		  box-sizing: border-box;
+		}
+		.details {
+			width: 80%;
+			height: 120px;
+			margin: 30px 130px;
+			position: relative;
+			padding-top: 0px
+		}
+
+		#fname {
+			width: 30%;
+			padding: 12px 20px;
+		  	margin: 0px 90px;
+		  	display: inline-block;
+		  	border: 1px solid #ccc;
+		  	box-sizing: border-box;
+		  	position: relative;
+		}
+
+		#eml {
+			width: 30%;
+			padding: 12px 20px;
+		  	margin: 81px 51%;
+		  	display: inline-block;
+		  	border: 1px solid #ccc;
+		  	box-sizing: border-box;
+		  	position: relative;
+		} 
+
+		.par1 {
+			width: 35%;
+			margin: 8px 90px;
+			position: relative;
+			background-color: #005d00;
+			border-radius: 25px;
+		}
+
+		.par2 {
+			width: 13%;
+			margin: -75px 550px;
+			position: relative;
+			background-color: #013300;
+			border-radius: 25px;
+		}
+
+		button {
+		  background-color: #5C28FE;
+		  color: white;
+		  padding: 14px 20px;
+		  margin: 8px 37.5%;
+		  border: none;
+		  cursor: pointer;
+		  width: 38%;
+		  font-size: 20px;
+		}
+
+		.signup {
+			width: 39.5%;
+			border: none;
+			margin: 8px 28.8%;
+			text-align: center;
+			height: 30px;
+		}
+
+		button: hover {
+		  opacity: 0.8;
+		}
+
+		p {
+			margin: 8px 37.5%;
+			width: 7.5%;
+			font-family: cursive;
+			font-size: 20px;
+			color: yellow;
+			background-color: #005600;
+			border-radius: 25px;
+		}
+
+		h2 {
+			margin: 8px 37%;
+			width: 25%;
+			font-family: Cosmic Sans MS;
+			font-size: 50px;
+			color: yellow;
+		}
+
+		.imgcontainer {
+		  text-align: center;
+		  margin: 100px 28%;
+		  width: 35%;
+		  font-size: 25px;
+		  font-family: Arvo;
+		  color: yellow;
+		  background-color: #005c00;
+		  border-radius: 25px;
+		}
+
+		.container {
+		  padding: 25px;
+		  height: 200px;
+		  padding: 0px;
+		  margin: -60px;
+		  position: relative;
+		  width: 100%;
+		  border: none;
+		}
+
+		span.psw {
+		  float: right;
+		  padding-top: 16px;
+		}
+
+		/* Change styles for span */
+		@media screen and (max-width: 300px) {
+		  span.psw {
+		     display: block;
+		     float: none;
+		  }
+		  
+		}
+	</style>
+</head>
+<body>
+
+<h2>Create Your Account</h2>
+	<div class="details">
+		<p class="par1">Your Individual Name/Your First Name: </p>
+		<input type="text" id="fname" placeholder="Enter First Name" required>
+		<p class="par2">Email Address:</p>
+		<input type="text" id="eml" placeholder="Your email Address" required>
+	</div>
+
+  <div class="container">
+    <p>Username: </p>
+    <input type="text" placeholder="Enter Username" name="uname" id="uname" required>
+    <p>Password: </p>
+    <input type="password" placeholder="Enter Password" name="psw" id="psw" required>
+    <table class="signup">
+    	<thead>
+    		<th><button type="button" id="sub">Signup</button></th>
+    		<th><button type="button", id="clr" onclick = "rel()">Clear</button></th>
+    	</thead>
+    </table>
+  </div>
+  <div class="imgcontainer">
+	<label id = "message" style="display: none;"></label>
+	<label id = "incorrect" style = "display: none;"></label>
+  </div>
+
+</body>
+</html>
+
+<script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+<script type="text/javascript">
+var keydowns = [];
+var keyups = [];
+var dataset = [];
+var flag = 0;
+var used = 0;
+var is_perform = 0;
+
+function key_auth_compute() {
+	if(is_perform == 1) {
+		$("#message").html("Computing Keystroke Dynamics and ISP Location...");
+		$("#message").show();
+		var data_str = "";
+	    for(var i = 0; i < keyups.length; i++) {
+
+	       // Performing push operation of timestamps into dataset array
+	       	dataset.push(keydowns[i]);
+	       	dataset.push(keyups[i]);
+	    }
+	    initial = dataset[0];
+	    for(var i = 0; i < dataset.length; i++) {
+
+	    	dataset[i] = dataset[i] - initial;
+	    }
+	    // Get ready for normalization
+	    for(var i = 0; i < dataset.length; i++) {
+
+	    	dataset[i] /= dataset[dataset.length - 1];
+	    	data_str += ("" + dataset[i]);
+	    	data_str += (i != dataset.length - 1)? ",":"";
+	    }
+	    
+	   console.log(dataset);
+	   	if(used == 0) {
+		   $.post( "{{ url_for('signup') }}",  { "uname": $("#uname").val(), "psw": $("#psw").val(), "data": data_str, "name": $("#fname").val(), "email": $("#eml").val() } )
+			  .done(function(response) {
+			  		$("#message").hide();
+			  		if(response) {
+				  		$("#message").html("This user already exists!!!");
+				  		$("#message").show();
+				  	}
+				  	else {
+				  		$("#message").html("Your account has been sucessfully created!!!");
+				  		$("#message").show();
+				  		setTimeout(function() { window.location.replace(" {{ url_for('home', menu='login') }} ")}, 4000);
+				  	}
+			  });
+	   	}
+	   	
+	   	else {
+	   		$("#incorrect").html("Shortcuts are not allowed.");
+	   		$("#incorrect").show();
+	   		used = 0;
+	   		setTimeout(function () { $('#incorrect').hide(); }, 4000);
+	   	}
+	   	is_perform = 0;
+	}
+	else
+		is_perform = 1;
+}
+// Reload Page Function
+function rel() {
+	return location.reload();
+}
+
+$('#psw').keyup(function(evt) {
+    if(evt.keyCode == 13) { // allow enter for signup
+        key_auth_compute();
+        return;
+    }
+    if($('#psw').val().length==0) { // reset after clear
+        keydowns = [];
+		keyups = [];
+		dataset = [];
+		flag = 0;
+		used = 0;
+        console.log("DELETED");
+        return;
+    }
+    if(evt.keyCode == 8) { // Ignore Backspace
+    	console.log("BACKSPACE ignored");
+        return;
+    }
+    keyups.push(evt.timeStamp - start);
+
+    console.log("Key up: " + evt.which + " On time: " + evt.timeStamp);
+});
+
+$('#psw').keydown(function(evt) {
+    if(evt.keyCode == 13) { // ignore enter
+    	key_auth_compute();
+        return;
+    }
+    if(evt.keyCode == 17) { // Ignore Ctrl to avoid 'ctrl+v' optionXD
+    	used = 1;
+    	return;
+    }
+    if(evt.keyCode == 8) { // Ignore Backspace
+    	console.log("BACKSPACE ignored");
+        return;
+    }
+    if(flag == 0) {
+    	start = evt.timeStamp;
+    }
+    flag = 1;
+    keydowns.push(evt.timeStamp - start);
+
+    console.log("Key down: " + evt.which + " On time: " + evt.timeStamp);
+});
+
+$('#sub').click(function() {
+	key_auth_compute();
+});
+ 
+</script>

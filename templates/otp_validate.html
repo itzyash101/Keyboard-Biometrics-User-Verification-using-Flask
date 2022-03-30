@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+	<style>
+		html { 
+		  background: url("{{ url_for('static', filename='secure3.jpg') }}") no-repeat center center fixed;
+		  -webkit-background-size: cover;
+		  -moz-background-size: cover;
+		  -o-background-size: cover;
+		  background-size: cover;
+		}
+		.otp_box {
+		  width: 40%;
+		  height: 50%;
+		  margin: 10% 30%;
+		  position: relative;
+		}
+		p {
+			font-family: Arvo;
+			font-size: 25px;
+			font-weight: 300;
+			margin: 20px 10%;
+			width: 50%;
+			color: yellow;
+		}
+		input[type=text] {
+		  width: 60%;
+		  padding: 12px 20px;
+		  margin: -3px 10%;
+		  display: inline-block;
+		  border: 2px solid #ccc;
+		  box-sizing: border-box;
+		}
+
+		button {
+		  background-color: #5C28FE;
+		  color: white;
+		  padding: 14px 20px;
+		  cursor: pointer;
+		  width: 20%;
+		  font-size: 20px;
+		}
+
+		#next {
+			margin: 40px 35px;
+			width: 19%;
+		}
+
+		#cancel {
+			margin: 40px 22%;
+		}
+
+		button: hover {
+		  opacity: 0.8;
+		}
+
+		.img {
+			width: 32.5%;
+			height: 10%;
+			margin: -40px 30%;
+			position: relative;
+			text-align: center;
+		}
+
+		#msg {
+			font-size: 25px;
+			color: yellow;
+			background-color: #154360;
+			border-radius: 25px;
+		}
+
+	</style>
+</head>
+<body>
+	<div class="otp_box">
+		<p>Enter 6-digit OTP PIN:</p>
+		<input type="text" placeholder="Enter OTP" id="psw" required>
+		<button type="button" id="next">Next</button>
+		<button type="button" id="cancel">Cancel</button>
+	</div>
+	<div class="img">
+		<label id="msg" style="display: none;"></label>
+	</div>
+</body>
+</html>
+
+<!-- Work left here:
+	1. Modification in functionality
+	2. Setting up css parameters for front-end development
+	3. Client-Scripting to work smooth in back-end -->
+
+<script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+<script type="text/javascript">
+
+	$("#next").click(function() {
+
+		$('#msg').html("Unlocking...");
+		$('#msg').show();
+		$.post("{{ link }}", {'otp': $('#psw').val()}).done(
+			function(response) {
+				$('#msg').hide();
+				if(response == "password_reset")
+					window.location.href = "{{ url_for('password_reset') }}";
+				else if(response == "unlocked") {
+					window.location.href = "{{ url_for('home', menu='unlocked') }}";
+				}
+				else if(response == "expired") {
+					$('#msg').html("Your OTP is expired.");
+					$('#msg').show();
+				}
+				else if(response == "invalid") {
+					$('#msg').html("Invalid OTP. Check your OTP again.");
+					$('#msg').show();
+				}
+			});
+	});
+
+	$("#cancel").click(function() {
+		window.location.href = "{{ url_for('home', menu='login') }}";
+	});
+</script>

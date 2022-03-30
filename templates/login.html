@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+	html { 
+	  background: url("{{ url_for('static', filename='secure.jpg') }}") no-repeat center center fixed;
+	  /* background: url("C:\\Users\\lakku\\OneDrive\\Desktop\\login_API\\static\\secure.jpg") no-repeat center center fixed; */
+	  -webkit-background-size: cover;
+	  -moz-background-size: cover;
+	  -o-background-size: cover;
+	  background-size: cover;
+	}
+	input[type=text], input[type=password] {
+	  width: 25%;
+	  padding: 12px 20px;
+	  margin: 0px 37.5%;
+	  display: inline-block;
+	  border: 1px solid #ccc;
+	  box-sizing: border-box;
+	}
+
+	button {
+	  background-color: #5C28FE;
+	  color: white;
+	  padding: 14px 20px;
+	  margin: 8px 37.5%;
+	  border: none;
+	  cursor: pointer;
+	  width: 40%;
+	  font-size: 20px;
+	}
+
+	table {
+		width: 37.5%;
+		border: none;
+		margin: 8px 30%;
+		text-align: center;
+		height: 30px;
+	}
+
+	button hover {
+	  opacity: 0.8;
+	}
+
+	.signup {
+		margin: 8px 45%;
+		width: 25%;
+		font-family: cursive;
+		font-size: 20px;
+		font-weight: 700;
+		color: #FF59CC;
+	}
+
+	a {
+		font-family: cursive;
+		font-size: 20px;
+		color: #FF59CC;
+		background-color: #025066;
+		border-radius: 25px
+	}
+
+	#u, #p, #no_acc {
+		margin: 8px 37.5%;
+		width: 25%;
+		font-family: cursive;
+		font-size: 21px;
+		color: #ECFF08;
+	  	background-color: #015a72;
+	  	border-radius: 25px
+	}
+	#u {
+		width: 8%;
+		background-color: #003643;
+	}
+	#p {
+		width: 7.5%;
+		background-color: #025469;
+	}
+	h2 {
+		margin: 8px 37%;
+		width: 25%;
+		font-family: Cosmic Sans MS;
+		font-size: 50px;
+		color: yellow;
+		background-color: #002b38;
+		border-radius: 25px;
+	}
+	.imgcontainer {
+	  text-align: center;
+	  margin: 14px 30%;
+	  font-size: 30px;
+	  font-family: Arvo;
+	  width: 40%;
+	  color: yellow;
+	  background-color: #013a47;
+	  border-radius: 25px;
+	}
+
+	.container {
+	  padding: 25px;
+	  height: 250px;
+	  margin: -40px;
+	  position: relative;
+	}
+
+	.quick_links {
+		text-align: left;
+		margin: 0px 10%;
+	}
+	#q {
+		width: 12%;
+		color: yellow;
+		font-size: 24px;
+		margin: 10px 20px;
+		background-color: #03475a;
+		border-radius: 25px
+	}
+	ul {
+	  list-style: none;
+	}
+
+	ul li::before {
+	  content: "\2022";
+	  color: yellow;
+	  font-weight: bold;
+	  display: inline-block; 
+	  width: 1em;
+	  margin-left: -1em;
+	}
+
+	span.psw {
+	  float: right;
+	  padding-top: 16px;
+	}
+
+	/* Change styles for span and cancel button on extra small screens */
+	@media screen and (max-width: 300px) {
+	  span.psw {
+	     display: block;
+	     float: none;
+	  }
+	  
+	}
+</style>
+</head>
+<body>
+
+<h2>Login Portal</h2>
+
+  <div class="container">
+    <p id="u">Username: </p>
+    <input type="text" placeholder="Enter Username" name="uname" id="uname" required>
+
+    <p id="p">Password: </p>
+    <input type="password" placeholder="Enter Password" name="psw" id="psw" required>
+    <table>
+    	<thead>
+    		<th><button type="button" id="sub" onclick="key_auth_compute()">Login</button></th>
+    		<th><button type="button", id="clr">Clear</button></th>
+    	</thead>
+    </table>
+  </div>
+  <p align="center" font-color="yellow" id="no_acc">Don't have an account! Create one for yourself</p>
+  <a href = "{{ url_for('signup') }}" class="signup">Sign Up now</a>
+  <div class="quick_links">
+  	<p id="q">Quick Links:</p>
+  	<ul>
+  		<li><a href = "{{ url_for('otp_mail', act='reset') }}">Forgot Password?!</a></li>
+  		<li><a href = "{{ url_for('otp_mail', act='unlock') }}">Account locked!! Unlock your Account</a></li>
+  	</ul>
+  </div>
+  <div class="imgcontainer">
+  	<label id="msg" style="display: none;"></label>
+    <label id="error" style="display: none;"></label>
+    <label id = "incorrect" style = "display: none;"></label>
+  </div>
+  
+</body>
+</html>
+
+<script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+<script type="text/javascript">
+var keydowns = [];
+var keyups = [];
+var dataset = [];
+var flag = 0;
+var used = 0;
+var is_perform = 0;
+
+function back2log() {
+	setTimeout(function() { window.location.replace(" {{ url_for('home', menu='login') }} "); }, 4000);
+}
+
+if("{{ labl }}" == "logout") {
+	$('#msg').html("You have been logged out Successfully!!!");
+	$('#msg').show();
+	back2log();
+}
+else if("{{ labl }}" == "deleted") {
+	$('#msg').html("Your account is deleted successfully!!!");
+	$('#msg').show();
+	back2log();
+}
+else if("{{ labl }}" == "unlocked") {
+	$('#msg').html("Your account is unlocked successfully!!!");
+	$('#msg').show();
+	back2log();
+}
+else if("{{ labl }}" == "reset") {
+	$('#msg').html("Your password reset is done successfully!!!");
+	$('#msg').show();
+	back2log();
+}
+else if("{{ labl }}" == "login") {}
+else {
+	window.location.href = " {{ url_for('home', menu='login') }} ";
+}
+
+function key_auth_compute() {  
+	if(is_perform == 1) {
+		$('#msg').html("Processing KeyStroke Dynamics...<br>ISP Location Data...");
+		$('#msg').show();
+		var data_str = "";
+	    for(var i = 0; i < keyups.length; i++) {
+
+	       // Performing push operation of timestamps into dataset array
+	       	dataset.push(keydowns[i]);
+	       	dataset.push(keyups[i]);
+	    }
+	    initial = dataset[0];
+	    for(var i = 0; i < dataset.length; i++) {
+
+	    	dataset[i] = dataset[i] - initial;
+	    }
+	    // Get ready for normalization
+	    for(var i = 0; i < dataset.length; i++) {
+
+	    	dataset[i] /= dataset[dataset.length - 1];
+	    	data_str += ("" + dataset[i]);
+	    	data_str += (i != dataset.length - 1)? ",":"";
+	    }
+	    
+	   console.log(dataset);
+	   	if(used == 0) {
+		   $.post( "url_for('home', menu='login')", { "uname": $("#uname").val(), "psw": $("#psw").val(), "data": data_str} )
+			  .done(function(confd) {
+			  		$('#msg').hide();
+			    	console.log(confd);
+			    	if(confd == "mismatch") {
+			    		$('#incorrect').html("Incorrect Credentials. Please try again.");
+			    		$('#incorrect').show();
+			    		setTimeout(function () { $('#incorrect').hide(); }, 5000);
+			    	}
+			    	else if(confd == "invalid") {
+			    		$('#incorrect').html("Invalid Username! SignUp to log in.");
+			    		$('#incorrect').show();
+			    		setTimeout(function () { $('#incorrect').hide(); }, 5000);
+			    	}
+			    	else if(confd == "locked") {
+			    		$('#incorrect').html("Your Account is locked.");
+			    		$('#incorrect').show();
+			    		setTimeout(function () { $('#incorrect').hide(); }, 5000);
+			    	}
+			    	else if(confd == "islock") {
+			    		$('#incorrect').html("You can't login now.<br>I said your Account is locked X(");
+			    		$('#incorrect').show();
+			    		setTimeout(function () { $('#incorrect').hide(); }, 5000);
+			    	}
+			    	else if(typeof confd == "object" && confd['val'] <= 50) {
+			    		$('#error').html("I'm " + (100 - confd).toPrecision(4) + "% confident that you are trying to bluff me.");
+			    		$('#error').show();
+			    		setTimeout(function () { $('#error').hide(); }, 5000);
+			    	}
+			    	else if(typeof confd == "object" && confd['val'] > 50) 
+						// There's an issue here.
+			    		window.location.href = confd['link']; 
+
+			    	else if(confd == "loc_mismatch") {
+			    		$('#incorrect').html("I guess you are genuine.<br>But, your ISP location has a mismatch.");
+			    		$('#incorrect').show();
+			    		setTimeout(function () { $('#incorrect').hide(); }, 5000);
+			    	}
+			  });
+	   	}
+
+	   	else {
+	   		$("#incorrect").html("Shortcuts are not allowed. Try Again");
+	   		$("#incorrect").show();
+	   		used = 0;
+	   		setTimeout(function () { $('#incorrect').hide(); }, 4000);
+	   	}
+	   	is_perform = 0;
+	}
+	else
+		is_perform = 1;
+}
+
+// Reload Page Function
+$('#clr').click(function() {
+	return window.location.href = " {{ url_for('home', menu='login') }} ";
+});
+$('#psw').keyup(function(evt) {
+    if(evt.keyCode == 13) { // ignore enter
+    	console.log("Enter function executed")
+        key_auth_compute();
+        return;
+    }
+    if($('#psw').val().length==0) { // reset after clear
+        keydowns = [];
+		keyups = [];
+		dataset = [];
+		flag = 0;
+		used = 0;
+        console.log("DELETED");
+        return;
+    }
+    if(evt.keyCode == 8) { // Ignore Backspace
+    	console.log("BACKSPACE ignored");
+        return;
+    }
+    keyups.push(evt.timeStamp - start);
+
+    console.log("Key up: " + evt.which + " On time: " + evt.timeStamp);
+});
+
+$('#psw').keydown(function(evt) {
+    if(evt.keyCode == 13) { // use enter here for login operation
+    	key_auth_compute();
+        return;
+    }
+    if(evt.keyCode == 17) { // Ignore Ctrl to avoid 'ctrl+v' optionXD
+    	used = 1;
+    	return;
+    }
+    if(evt.keyCode == 8) { // Ignore Backspace
+    	console.log("BACKSPACE ignored");
+        return;
+    }
+    if(flag == 0) {
+    	start = evt.timeStamp;
+    }
+    flag = 1;
+    keydowns.push(evt.timeStamp - start);
+
+    console.log("Key down: " + evt.which + " On time: " + evt.timeStamp);
+});
+$('#sub').click(function() {
+	key_auth_compute();
+});
+ 
+</script>

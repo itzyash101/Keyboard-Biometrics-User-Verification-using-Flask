@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>Welcome</title>
+	<style>
+		html { 
+		  background: url("{{ url_for('static', filename='secure1.jpg') }}") no-repeat center center fixed;
+		  -webkit-background-size: cover;
+		  -moz-background-size: cover;
+		  -o-background-size: cover;
+		  background-size: cover;
+		}
+		.container {
+		  padding: 25px;
+		  height: 100px;
+		  margin: -40px;
+		  width: 100%;
+		  position: relative;
+		}
+		h1 {
+			width: 20%;
+			margin: 20px 100px;
+			color: yellow;
+			background-color: #021a36;
+			border-radius: 30px;
+		}
+		button {
+		  background-color: #5C28FE;
+		  color: white;
+		  padding: 14px 20px;
+		  margin: 8px;
+		  border: none;
+		  cursor: pointer;
+		  width: 70%;
+		  font-size: 20px;
+		}
+		table {
+			width: 37.5%;
+			margin: 8px 30px;
+			text-align: center;
+			height: 30px;
+		}
+		#img {
+			text-align: center;
+			margin: 8px 20px;
+			font-size: 30px;
+			font-family: Arvo;
+			width: 40%;
+			background-color: #000e23;
+			color: yellow;
+			border-radius: 30px;
+		}
+	</style>
+</head>
+<body>
+	<h1>Welcome {{ name }}!</h1>
+	<!-- <form action="http://127.0.0.1:5000/welcome/{{ name }}" method="post"> -->
+	<div class="container">
+		<table>
+	    	<thead>
+	    		<th><button type="button" id="lout">Logout</button></th>
+	    		<th><button type="button" id="del">Delete your Account</button></th>
+	    	</thead>
+	    </table>
+	</div>
+	<div id="img">
+		<label id="msg" style="display: none;"></label>
+		<label id="loc_data" style="display: none;"></label>
+	</div>
+	<!-- </form> -->
+</body>
+</html>
+<script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+<script type="text/javascript">
+	function post(swt) {
+		$.post("{{ link }}", {'switch': swt}).done(function(data) {
+			if(data == 0)
+				window.location.href = "{{ url_for('home', menu='') }}" + swt;
+		});
+	}
+	$('#msg').html("I'm " + (parseFloat("{{ perc }}").toPrecision(4)).toString() + " confident that my user is genuine:)");
+	$('#msg').show();
+
+	var info = "Host Name: {{ geo_data['host'] }}<br>";
+	info += "Public IP Address: {{ geo_data['public_ip'] }}<br>";
+	info += "<br><u>ISP Location Data:</u><br>";
+	info += "ISP Location Matched<br>";
+	info += "Country: {{ geo_data['country'] }}<br>";
+	info += "Region: {{ geo_data['region'] }}<br>";
+	info += "City: {{ geo_data['region'] }}";
+	$('#loc_data').html(info);
+	$('#loc_data').show();
+
+	$('#lout').click(function() {
+		post("logout");
+	});
+		
+	$('#del').click(function() {
+		post("deleted");
+	});
+
+</script>

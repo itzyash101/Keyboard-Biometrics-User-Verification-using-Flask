@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+	<style>
+		html { 
+		  background: url("{{ url_for('static', filename='secure3.jpg') }}") no-repeat center center fixed;
+		  -webkit-background-size: cover;
+		  -moz-background-size: cover;
+		  -o-background-size: cover;
+		  background-size: cover;
+		}
+		.passblock {
+		  width: 40%;
+		  height: 50%;
+		  margin: 10% 30%;
+		  position: relative;
+		}
+		p {
+			font-family: Arvo;
+			font-size: 25px;
+			font-weight: 300;
+			margin: 20px 10%;
+			width: 50%;
+			color: yellow;
+		}
+		input[type=password] {
+		  width: 60%;
+		  padding: 12px 20px;
+		  margin: -3px 10%;
+		  display: inline-block;
+		  border: 2px solid #ccc;
+		  box-sizing: border-box;
+		}
+
+		button {
+		  background-color: #5C28FE;
+		  color: white;
+		  padding: 14px 20px;
+		  cursor: pointer;
+		  width: 20%;
+		  font-size: 20px;
+		}
+
+		#sub {
+			margin: 40px 35px;
+		}
+
+		#clr {
+			margin: 40px 20%;
+		}
+
+		.img {
+			width: 32.5%;
+			height: 10%;
+			margin: -40px 30%;
+			position: relative;
+			text-align: center;
+		}
+
+		#msg {
+			font-size: 25px;
+			color: yellow;
+			background-color: #154360;
+			border-radius: 25px;
+		}
+
+		button: hover {
+		  opacity: 0.8;
+		}
+
+	</style>
+</head>
+<body>
+	<div class="passblock">
+		<p>Your New Password:</p>
+		<input type="password" placeholder="Enter Password" id="psw" required>
+		<button type="button" id="sub">Submit</button>
+		<button type="button" id="clr">Clear</button>
+	</div>
+	<div class="img">
+		<label id="msg" style="display: none;"></label>
+	</div>
+</body>
+</html>
+
+<!-- Work left here:
+	1. Modification in functionality
+	2. Setting up css parameters for front-end development
+	3. Client-Scripting to work smooth in back-end -->
+
+<script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+<script type="text/javascript">
+var keydowns = [];
+var keyups = [];
+var dataset = [];
+var flag = 0;
+var used = 0;
+var is_perform = 0;
+
+function key_auth_compute() {
+	if(is_perform == 1) {
+		$('#msg').html("Reset going on.<br>Please Wait...");
+		$('#msg').show();
+		flag = 0;
+		var data_str = "";
+	    for(var i = 0; i < keyups.length; i++) {
+
+	       // Performing push operation of timestamps into dataset array
+	       	dataset.push(keydowns[i]);
+	       	dataset.push(keyups[i]);
+	    }
+	    initial = dataset[0];
+	    for(var i = 0; i < dataset.length; i++) {
+
+	    	dataset[i] = dataset[i] - initial;
+	    }
+	    // Get ready for normalization
+	    for(var i = 0; i < dataset.length; i++) {
+
+	    	dataset[i] /= dataset[dataset.length - 1];
+	    	data_str += ("" + dataset[i]);
+	    	data_str += (i != dataset.length - 1)? ",":"";
+	    }
+
+	    console.log(dataset);
+	    if(used == 0) {
+			$.post("{{ url_for('password_reset') }}", {'new_pass': $('#psw').val(), 'pattern': data_str}).done(
+				function(response) {
+					$('#msg').hide();
+					if(response == "reset_done")
+						window.location.href = "{{ url_for('home', menu='reset') }}";
+				});
+	    }
+	    else {
+	    	$('#msg').html("Shortcuts are not allowed. Try again.");
+	    	$('#msg').show();
+	    	used = 0;
+	    	setTimeout(function () { $('#msg').hide(); }, 4000);
+	    }
+
+		is_perform = 0;
+	}
+	else
+		is_perform = 1;
+}
+// 
+$('#clr').click(function() {
+	return window.location.href = " {{ url_for('password_reset') }} ";
+});
+$('#psw').keyup(function(evt) {
+    if(evt.keyCode == 13) { // ignore enter
+        key_auth_compute();
+        return;
+    }
+    if($('#psw').val().length==0) { // reset after clear
+        keydowns = [];
+		keyups = [];
+		dataset = [];
+		flag = 0;
+		used = 0;
+        console.log("DELETED");
+        return;
+    }
+    if(evt.keyCode == 8) { // Ignore Backspace
+    	console.log("BACKSPACE ignored");
+        return;
+    }
+    keyups.push(evt.timeStamp - start);
+
+    console.log("Key up: " + evt.which + " On time: " + evt.timeStamp);
+});
+
+$('#psw').keydown(function(evt) {
+    if(evt.keyCode == 13) { // ignore enter
+        key_auth_compute();
+        return;
+    }
+    if(evt.keyCode == 17) { // Ignore Ctrl to avoid 'ctrl+v' optionXD
+    	used = 1;
+    	return;
+    }
+    if(evt.keyCode == 8) { // Ignore Backspace
+    	console.log("BACKSPACE ignored");
+        return;
+    }
+    if(flag == 0) {
+    	start = evt.timeStamp;
+    }
+    flag = 1;
+    keydowns.push(evt.timeStamp - start);
+
+    console.log("Key down: " + evt.which + " On time: " + evt.timeStamp);
+});
+
+$('#sub').click(function() {
+	key_auth_compute();
+});
+</script>
